@@ -57,5 +57,4 @@ jobs:
           PGPASSWORD: odoo
           PGDATABASE: odoo_test_db
         run: |
-          # Assuming odoo-bin is in your PATH or specify the full path
-          ./odoo-bin -d odoo_test_db -i account --test-enable --stop-after-init
+          ./odoo-bin -d odoo_test_db -i app_one --test-enable --stop-after-init
