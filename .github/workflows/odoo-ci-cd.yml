@@ -58,3 +58,23 @@ jobs:
           PGDATABASE: odoo_test_db
         run: |
           ./odoo-bin --addons-path=./addons,./odoo/addons,./odoo/custom_addons -d odoo_test_db -i app_one --stop-after-init
+
+    # This workflow contains a single job called "build"
+  deploy:
+    needs: test
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Deploy using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
+            su - odoo17
+            cd /opt/odoo17/estate
+            pwd
