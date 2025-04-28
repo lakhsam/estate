@@ -57,4 +57,4 @@ jobs:
           PGPASSWORD: odoo
           PGDATABASE: odoo_test_db
         run: |
-          ./odoo-bin -d odoo_test_db -i app_one --test-enable --stop-after-init
+          ./odoo-bin --addons-path=./addons,./odoo/addons,./odoo/custom_addons -d odoo_test_db -i app_one --stop-after-init
