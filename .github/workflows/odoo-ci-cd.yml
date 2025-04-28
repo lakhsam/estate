@@ -61,20 +61,46 @@ jobs:
 
     # This workflow contains a single job called "build"
   deploy:
-    needs: test
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Deploy using ssh
-        uses: appleboy/ssh-action@master
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install SSH client
+        run: sudo apt-get install -y openssh-client
+
+      - name: Zip repository
+        run: zip -r estate.zip . -x "*.git*"
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - name: Transfer zip to server
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USER: ${{ secrets.USERNAME }}
+        run: |
+          scp -o StrictHostKeyChecking=no estate.zip $SSH_USER@$SSH_HOST:/opt/odoo17/estate/estate.zip
+      - name: Multiple commands
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          port: 22
           script: |
-            su - odoo17
-            cd /opt/odoo17/estate
-            pwd
+            echo "Stopping Odoo 17 ..."
+            systemctl stop odoo17
+            chmod 755 /opt/odoo17/estate/estate.zip
+            echo "Unzipping new Odoo files..."
+            unzip -o /opt/odoo17/estate/estate.zip -d /opt/odoo17/estate
+            echo "Setting permissions for Odoo 17..."
+            chown -R odoo17:odoo17 /opt/odoo17/estate
+            echo "Starting Odoo17 service..."
+            systemctl start odoo17
+            echo "Deployment successful!."
+
+      - name: Clean up
+        run: rm estate.zip
