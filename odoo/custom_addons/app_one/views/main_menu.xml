@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <menuitem
+            id="real_estate_menu_root"
+            name="Real Estate"
+            web_icon="app_one/static/description/icon.png"
+    />
+    <menuitem
+            id="properties_menu"
+            name="Properties"
+            parent="real_estate_menu_root"
+    />
+    <menuitem
+            id="configuration_menu"
+            name="Configuration"
+            parent="real_estate_menu_root"
+            groups="app_one.property_manager_group"
+    />
+</odoo>
